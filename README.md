@@ -1,0 +1,1 @@
+# calendario_caminhar2026_mercadinho
