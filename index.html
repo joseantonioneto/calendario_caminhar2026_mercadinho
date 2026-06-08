@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendário - VIII Caminhar</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        /* Legenda das cores */
+        .legend {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            font-size: 14px;
+            background: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: bold;
+        }
+
+        .color-box {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        /* Container para todos os meses */
+        .calendars-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            width: 100%;
+            max-width: 1200px;
+            margin-bottom: 30px;
+        }
+
+        .calendar {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 320px;
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: var(--primary-color);
+            color: #fff;
+            text-align: center;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            background-color: #ecf0f1;
+            text-align: center;
+            font-weight: bold;
+            padding: 10px 0;
+            color: var(--primary-color);
+            font-size: 14px;
+        }
+
+        .days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            padding: 10px;
+            gap: 5px;
+        }
+
+        .day {
+            text-align: center;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 14px;
+        }
+
+        .day:hover {
+            background-color: #f0f0f0;
+        }
+
+        .day.empty {
+            cursor: default;
+        }
+
+        .day.empty:hover {
+            background-color: transparent;
+        }
+
+        /* Estilo para Eventos Gerais */
+        .day.has-event {
+            background-color: #fad390;
+            font-weight: bold;
+            color: #b71540;
+            border: 1px solid #e58e26;
+        }
+
+        /* Estilo NOVO para Reuniões (Quintas) */
+        .day.has-meeting {
+            background-color: #d6eaf8;
+            font-weight: bold;
+            color: #154360;
+            border: 1px solid #3498db;
+        }
+
+        .day.selected {
+            background-color: var(--accent-color) !important;
+            color: #fff !important;
+            border-color: var(--accent-color) !important;
+        }
+
+        .event-details {
+            width: 100%;
+            max-width: 600px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: none;
+            position: sticky;
+            bottom: 20px;
+        }
+
+        .event-item {
+            border-left: 4px solid var(--accent-color);
+            padding-left: 10px;
+            margin-bottom: 10px;
+        }
+
+        .event-item h3 {
+            margin: 0 0 5px 0;
+            color: var(--primary-color);
+        }
+
+        .event-item p {
+            margin: 0;
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Cronograma VIII Caminhar</h1>
+    
+    <div class="legend">
+        <div class="legend-item">
+            <div class="color-box" style="background-color: #d6eaf8; border: 1px solid #3498db;"></div>
+            Reuniões (Quintas)
+        </div>
+        <div class="legend-item">
+            <div class="color-box" style="background-color: #fad390; border: 1px solid #e58e26;"></div>
+            Eventos e Prazos
+        </div>
+    </div>
+
+    <div class="calendars-wrapper" id="calendarsWrapper"></div>
+
+    <div class="event-details" id="eventDetails">
+        <h2 id="selectedDateText">Detalhes do Evento</h2>
+        <div id="eventList"></div>
+    </div>
+
+    <script>
+        const events = [
+            { date: '2026-05-11', title: 'REUNIÃO 1', time: '19:30', location: 'Matriz Cristo Rei' },
+            { date: '2026-05-21', title: 'REUNIÃO 2', time: '19:30', location: 'Matriz Cristo Rei' },
+            { date: '2026-05-30', title: 'SÃO JOÃO', time: 'A definir', location: 'A definir' },
+            { date: '2026-06-11', title: 'REUNIÃO 3', time: '19:30', location: 'Matriz Cristo Rei' },
+            { date: '2026-06-18', title: 'REUNIÃO 4', time: '19:30', location: 'Matriz Cristo Rei' },
+            { date: '2026-06-25', title: 'REUNIÃO 5', time: '19:30', location: 'Matriz Cristo Rei' },
+            { date: '2026-07-01', title: 'INSCRIÇÕES', time: 'A definir', location: 'A definir' },
+            { date: '2026-07-02', title: 'INSCRIÇÕES & REUNIÃO 6', time: '19:30', location: 'Matriz Cristo Rei' },
+            { date: '2026-07-05', title: 'INSCRIÇÕES', time: 'A definir', location: 'A definir' },
+            { date: '2026-07-09', title: 'REUNIÃO 7', time: '19:30', location: 'Matriz Cristo Rei' },
+            { date: '2026-07-12', title: 'FEIJOADA', time: 'A definir', location: 'A definir' },
+            { date: '2026-07-16', title: 'REUNIÃO 8', time: '19:30', location: 'Matriz Cristo Rei' },
+            { date: '2026-08-02', title: 'SHOW DE PRÊMIOS', time: 'A definir', location: 'A definir' },
+            { date: '2026-08-06', title: 'REUNIÃO 9', time: '19:30', location: 'Matriz Cristo Rei' },
+            { date: '2026-08-13', title: 'REUNIÃO 10', time: '19:30', location: 'Matriz Cristo Rei' },
+            { date: '2026-08-16', title: 'GINCANA', time: 'A definir', location: 'A definir' },
+            { date: '2026-08-23', title: 'APROFUNDAMENTO', time: 'A definir', location: 'A definir' },
+            { date: '2026-09-01', title: 'MISSA DE ENVIO', time: 'A definir', location: 'A definir' },
+            { date: '2026-09-02', title: 'ENSAIO GERAL', time: 'A definir', location: 'A definir' },
+            { date: '2026-09-04', title: 'VIII CAMINHAR', time: 'A definir', location: 'A definir' },
+            { date: '2026-09-05', title: 'VIII CAMINHAR', time: 'A definir', location: 'A definir' },
+            { date: '2026-09-06', title: 'VIII CAMINHAR', time: 'A definir', location: 'A definir' }
+        ];
+
+        const months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+        const wrapper = document.getElementById('calendarsWrapper');
+        const eventDetailsDiv = document.getElementById('eventDetails');
+        const selectedDateText = document.getElementById('selectedDateText');
+        const eventList = document.getElementById('eventList');
+
+        // Função para renderizar todos os meses de Maio (4) a Setembro (8)
+        function renderAllMonths() {
+            wrapper.innerHTML = ''; // Limpa o container
+            for (let m = 4; m <= 8; m++) {
+                renderMonth(2026, m);
+            }
+        }
+
+        function renderMonth(year, month) {
+            const calDiv = document.createElement('div');
+            calDiv.className = 'calendar';
+
+            // Cabeçalho do Mês
+            const headerDiv = document.createElement('div');
+            headerDiv.className = 'header';
+            headerDiv.textContent = `${months[month]} ${year}`;
+            calDiv.appendChild(headerDiv);
+
+            // Dias da semana
+            const weekdaysDiv = document.createElement('div');
+            weekdaysDiv.className = 'weekdays';
+            ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'].forEach(d => {
+                const w = document.createElement('div');
+                w.textContent = d;
+                weekdaysDiv.appendChild(w);
+            });
+            calDiv.appendChild(weekdaysDiv);
+
+            // Grid de dias
+            const daysDiv = document.createElement('div');
+            daysDiv.className = 'days';
+
+            const firstDayOfMonth = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            // Espaços vazios
+            for (let i = 0; i < firstDayOfMonth; i++) {
+                const emptyDiv = document.createElement('div');
+                emptyDiv.classList.add('day', 'empty');
+                daysDiv.appendChild(emptyDiv);
+            }
+
+            // Preenchendo os dias
+            for (let i = 1; i <= daysInMonth; i++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.classList.add('day');
+                dayDiv.textContent = i;
+
+                const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                
+                const dayEvents = events.filter(e => e.date === dateString);
+                
+                if (dayEvents.length > 0) {
+                    // Checa se o evento do dia inclui "REUNIÃO"
+                    const isMeeting = dayEvents.some(e => e.title.includes('REUNIÃO'));
+                    
+                    if (isMeeting) {
+                        dayDiv.classList.add('has-meeting'); // Azul para reuniões
+                    } else {
+                        dayDiv.classList.add('has-event'); // Laranja para o resto
+                    }
+                }
+
+                dayDiv.addEventListener('click', () => {
+                    document.querySelectorAll('.day').forEach(d => d.classList.remove('selected'));
+                    dayDiv.classList.add('selected');
+                    showEvents(dateString, i, months[month], year, dayEvents);
+                });
+
+                daysDiv.appendChild(dayDiv);
+            }
+
+            calDiv.appendChild(daysDiv);
+            wrapper.appendChild(calDiv);
+        }
+
+        function showEvents(dateString, day, monthName, year, dayEvents) {
+            selectedDateText.textContent = `Eventos em ${day} de ${monthName} de ${year}`;
+            eventList.innerHTML = '';
+
+            if (dayEvents.length > 0) {
+                dayEvents.forEach(e => {
+                    const eventItem = document.createElement('div');
+                    eventItem.classList.add('event-item');
+                    
+                    // Muda a cor da borda lateral se for reunião
+                    if(e.title.includes('REUNIÃO')) {
+                        eventItem.style.borderLeftColor = '#3498db';
+                        eventItem.querySelector('h3') ? eventItem.querySelector('h3').style.color = '#2980b9' : '';
+                    }
+
+                    eventItem.innerHTML = `
+                        <h3 style="margin: 0 0 5px 0; color: ${e.title.includes('REUNIÃO') ? '#2980b9' : 'var(--primary-color)'};">${e.title}</h3>
+                        <p><strong>Hora:</strong> ${e.time}</p>
+                        <p><strong>Local:</strong> ${e.location}</p>
+                    `;
+                    eventList.appendChild(eventItem);
+                });
+            } else {
+                eventList.innerHTML = '<p>Nenhum evento programado para este dia.</p>';
+            }
+
+            eventDetailsDiv.style.display = 'block';
+            
+            // Rola a página suavemente para ver os detalhes se estiver em tela menor
+            eventDetailsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Inicializa renderizando todos os meses
+        renderAllMonths();
+    </script>
+</body>
+</html>
