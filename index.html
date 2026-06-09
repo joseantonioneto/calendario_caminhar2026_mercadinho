@@ -10,6 +10,19 @@
             --accent-color: #e74c3c;
             --bg-color: #f4f7f6;
             --text-color: #333;
+            
+            /* Cores Específicas */
+            --coord-bg: #d6eaf8;
+            --coord-border: #3498db;
+            --coord-text: #154360;
+            
+            --vigilia-bg: #d2b4de;
+            --vigilia-border: #8e44ad;
+            --vigilia-text: #4a235a;
+            
+            --geral-bg: #fad390;
+            --geral-border: #e58e26;
+            --geral-text: #b71540;
         }
 
         body {
@@ -25,7 +38,37 @@
         h1 {
             color: var(--primary-color);
             text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* Sistema de Abas */
+        .tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background-color: #ecf0f1;
+            color: var(--primary-color);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .tab-btn:hover {
+            background-color: #bdc3c7;
+        }
+
+        .tab-btn.active {
+            background-color: var(--primary-color);
+            color: #fff;
+            transform: scale(1.05);
         }
 
         /* Legenda das cores */
@@ -121,20 +164,26 @@
             background-color: transparent;
         }
 
-        /* Estilo para Eventos Gerais */
-        .day.has-event {
-            background-color: #fad390;
+        /* Classes dinâmicas de eventos */
+        .day.has-geral {
+            background-color: var(--geral-bg);
             font-weight: bold;
-            color: #b71540;
-            border: 1px solid #e58e26;
+            color: var(--geral-text);
+            border: 1px solid var(--geral-border);
         }
 
-        /* Estilo NOVO para Reuniões (Quintas) */
-        .day.has-meeting {
-            background-color: #d6eaf8;
+        .day.has-coord {
+            background-color: var(--coord-bg);
             font-weight: bold;
-            color: #154360;
-            border: 1px solid #3498db;
+            color: var(--coord-text);
+            border: 1px solid var(--coord-border);
+        }
+
+        .day.has-vigilia {
+            background-color: var(--vigilia-bg);
+            font-weight: bold;
+            color: var(--vigilia-text);
+            border: 1px solid var(--vigilia-border);
         }
 
         .day.selected {
@@ -176,14 +225,19 @@
 <body>
 
     <h1>Cronograma VIII Caminhar</h1>
+
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="coord">Coordenação Geral</button>
+        <button class="tab-btn" data-tab="vigilia">Equipe de Vigília</button>
+    </div>
     
     <div class="legend">
         <div class="legend-item">
-            <div class="color-box" style="background-color: #d6eaf8; border: 1px solid #3498db;"></div>
-            Reuniões Coordenação (Quintas)
+            <div id="legendColorBox" class="color-box" style="background-color: var(--coord-bg); border: 1px solid var(--coord-border);"></div>
+            <span id="legendType">Reuniões Coordenação</span>
         </div>
         <div class="legend-item">
-            <div class="color-box" style="background-color: #fad390; border: 1px solid #e58e26;"></div>
+            <div class="color-box" style="background-color: var(--geral-bg); border: 1px solid var(--geral-border);"></div>
             Eventos e Prazos
         </div>
     </div>
@@ -196,29 +250,57 @@
     </div>
 
     <script>
-        const events = [
-            { date: '2026-05-11', title: 'REUNIÃO 1', time: '19:30', location: 'Matriz Cristo Rei' },
-            { date: '2026-05-21', title: 'REUNIÃO 2', time: '19:30', location: 'Matriz Cristo Rei' },
-            { date: '2026-05-30', title: 'SÃO JOÃO', time: 'A definir', location: 'A definir' },
-            { date: '2026-06-11', title: 'REUNIÃO 3', time: '19:30', location: 'Matriz Cristo Rei' },
-            { date: '2026-06-18', title: 'REUNIÃO 4', time: '19:30', location: 'Matriz Cristo Rei' },
-            { date: '2026-06-25', title: 'REUNIÃO 5', time: '19:30', location: 'Matriz Cristo Rei' },
-            { date: '2026-07-01', title: 'INSCRIÇÕES', time: 'A definir', location: 'A definir' },
-            { date: '2026-07-02', title: 'INSCRIÇÕES & REUNIÃO 6', time: '19:30', location: 'Matriz Cristo Rei' },
-            { date: '2026-07-05', title: 'INSCRIÇÕES', time: 'A definir', location: 'A definir' },
-            { date: '2026-07-09', title: 'REUNIÃO 7', time: '19:30', location: 'Matriz Cristo Rei' },
-            { date: '2026-07-12', title: 'FEIJOADA', time: 'A definir', location: 'A definir' },
-            { date: '2026-07-16', title: 'REUNIÃO 8', time: '19:30', location: 'Matriz Cristo Rei' },
-            { date: '2026-08-02', title: 'SHOW DE PRÊMIOS', time: 'A definir', location: 'A definir' },
-            { date: '2026-08-06', title: 'REUNIÃO 9', time: '19:30', location: 'Matriz Cristo Rei' },
-            { date: '2026-08-13', title: 'REUNIÃO 10', time: '19:30', location: 'Matriz Cristo Rei' },
-            { date: '2026-08-16', title: 'GINCANA', time: 'A definir', location: 'A definir' },
-            { date: '2026-08-23', title: 'APROFUNDAMENTO', time: 'A definir', location: 'A definir' },
-            { date: '2026-09-01', title: 'MISSA DE ENVIO', time: 'A definir', location: 'A definir' },
-            { date: '2026-09-02', title: 'ENSAIO GERAL', time: 'A definir', location: 'A definir' },
-            { date: '2026-09-04', title: 'VIII CAMINHAR', time: 'A definir', location: 'A definir' },
-            { date: '2026-09-05', title: 'VIII CAMINHAR', time: 'A definir', location: 'A definir' },
-            { date: '2026-09-06', title: 'VIII CAMINHAR', time: 'A definir', location: 'A definir' }
+        // Banco de dados extraído diretamente da sua planilha
+        // Tipos: 'geral' (ambos veem), 'coord' (só coordenação), 'vigilia' (só equipe vigília)
+        const allEvents = [
+            // MAIO
+            { date: '2026-05-11', title: '1ª Reunião Coord', time: '19:30', location: 'Matriz Cristo Rei', type: 'coord' },
+            { date: '2026-05-21', title: '2ª Reunião Coord', time: '19:30', location: 'Matriz Cristo Rei', type: 'coord' },
+            { date: '2026-05-30', title: 'São João', time: 'São João', location: 'São João', type: 'geral' },
+            
+            // JUNHO
+            { date: '2026-06-09', title: '2ª Reunião de equipe', time: '20:00', location: 'Casa de Lívia e Jacques', type: 'vigilia' },
+            { date: '2026-06-11', title: '3ª Reunião Coord', time: '19:30', location: 'Matriz Cristo Rei', type: 'coord' },
+            { date: '2026-06-15', title: '3ª Reunião de equipe', time: '20:00', location: 'A definir', type: 'vigilia' },
+            { date: '2026-06-18', title: '4ª Reunião Coord', time: '19:30', location: 'Matriz Cristo Rei', type: 'coord' },
+            { date: '2026-06-23', title: '4ª Reunião de equipe/Capela', time: '20:00', location: 'A definir', type: 'vigilia' },
+            { date: '2026-06-25', title: '5ª Reunião Coord', time: '19:30', location: 'Matriz Cristo Rei', type: 'coord' },
+            
+            // JULHO
+            { date: '2026-07-01', title: '5ª Reunião de equipe/Capela', time: '20:00', location: 'A definir', type: 'vigilia' },
+            { date: '2026-07-01', title: 'Inscrições', time: 'Inscrições', location: 'Inscrições', type: 'geral' },
+            { date: '2026-07-02', title: '6ª Reunião Coord', time: '19:30', location: 'Matriz Cristo Rei', type: 'coord' },
+            { date: '2026-07-02', title: 'Inscrições', time: 'Inscrições', location: 'Inscrições', type: 'geral' },
+            { date: '2026-07-05', title: 'Inscrições', time: 'Inscrições', location: 'Inscrições', type: 'geral' },
+            { date: '2026-07-06', title: '6ª Reunião de equipe/Capela', time: '20:00', location: 'A definir', type: 'vigilia' },
+            { date: '2026-07-09', title: '7ª Reunião Coord', time: '19:30', location: 'Matriz Cristo Rei', type: 'coord' },
+            { date: '2026-07-12', title: 'Feijoada', time: 'Feijoada', location: 'Feijoada', type: 'geral' },
+            { date: '2026-07-14', title: '7ª Reunião de equipe', time: '20:00', location: 'A definir', type: 'vigilia' },
+            { date: '2026-07-16', title: '8ª Reunião Coord', time: '19:30', location: 'Matriz Cristo Rei', type: 'coord' },
+            { date: '2026-07-20', title: '8ª Reunião de equipe', time: '20:00', location: 'A definir', type: 'vigilia' },
+            { date: '2026-07-23', title: 'Reunião Momentos (Aprofundamento)', time: '20:00', location: 'A definir', type: 'vigilia' },
+            { date: '2026-07-28', title: 'Reunião Momentos (Sexta-Feira e Momento de Maria)', time: '20:00', location: 'A definir', type: 'vigilia' },
+            { date: '2026-07-29', title: 'Reunião Momentos (Momento de Cristo)', time: '20:00', location: 'A definir', type: 'vigilia' },
+            
+            // AGOSTO
+            { date: '2026-08-02', title: 'Show de Prêmios', time: 'Show de Prêmios', location: 'Show de Prêmios', type: 'geral' },
+            { date: '2026-08-03', title: 'Reunião Momentos (Fechamento de momentos)', time: '20:00', location: 'A definir', type: 'vigilia' },
+            { date: '2026-08-06', title: '9ª Reunião Coord', time: '19:30', location: 'Matriz Cristo Rei', type: 'coord' },
+            { date: '2026-08-11', title: '9ª Reunião de Equipe/Gincana', time: '20:00', location: 'A definir', type: 'vigilia' },
+            { date: '2026-08-13', title: '10ª Reunião Coord', time: '19:30', location: 'Matriz Cristo Rei', type: 'coord' },
+            { date: '2026-08-16', title: 'Gincana', time: 'Gincana', location: 'Gincana', type: 'geral' },
+            { date: '2026-08-19', title: '10ª Reunião de Equipe', time: '20:00', location: 'A definir', type: 'vigilia' },
+            { date: '2026-08-20', title: 'Reunião Momentos (Alinhamento aprofundamento)', time: '20:00', location: 'A definir', type: 'vigilia' },
+            { date: '2026-08-23', title: 'Aprofundamento', time: 'Aprofundamento', location: 'Aprofundamento', type: 'geral' },
+            { date: '2026-08-25', title: 'Reserva para Produção/Reunião', time: '20:00', location: 'A definir', type: 'vigilia' },
+            { date: '2026-08-26', title: 'Reserva para Produção/Reunião', time: '20:00', location: 'A definir', type: 'vigilia' },
+            
+            // SETEMBRO
+            { date: '2026-09-01', title: 'Missa de Envio', time: 'Missa de Envio', location: 'Missa de Envio', type: 'geral' },
+            { date: '2026-09-02', title: 'Ensaio Geral', time: 'Ensaio Geral', location: 'Ensaio Geral', type: 'geral' },
+            { date: '2026-09-04', title: 'VIII Caminhar', time: 'O dia todo', location: 'VIII Caminhar', type: 'geral' },
+            { date: '2026-09-05', title: 'VIII Caminhar', time: 'O dia todo', location: 'VIII Caminhar', type: 'geral' },
+            { date: '2026-09-06', title: 'VIII Caminhar', time: 'O dia todo', location: 'VIII Caminhar', type: 'geral' }
         ];
 
         const months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
@@ -226,10 +308,41 @@
         const eventDetailsDiv = document.getElementById('eventDetails');
         const selectedDateText = document.getElementById('selectedDateText');
         const eventList = document.getElementById('eventList');
+        
+        let currentView = 'coord'; // Define qual aba está ativa ('coord' ou 'vigilia')
 
-        // Função para renderizar todos os meses de Maio (4) a Setembro (8)
+        // Lógica de troca de Abas
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                
+                currentView = e.target.getAttribute('data-tab');
+                updateLegend();
+                eventDetailsDiv.style.display = 'none'; // Esconde detalhes ao trocar de aba
+                renderAllMonths();
+            });
+        });
+
+        function updateLegend() {
+            const legendType = document.getElementById('legendType');
+            const colorBox = document.getElementById('legendColorBox');
+            
+            if (currentView === 'coord') {
+                legendType.textContent = 'Reuniões Coordenação';
+                colorBox.style.backgroundColor = 'var(--coord-bg)';
+                colorBox.style.borderColor = 'var(--coord-border)';
+            } else {
+                legendType.textContent = 'Reuniões Equipe Vigília';
+                colorBox.style.backgroundColor = 'var(--vigilia-bg)';
+                colorBox.style.borderColor = 'var(--vigilia-border)';
+            }
+        }
+
+        // Renderiza de Maio (4) a Setembro (8)
         function renderAllMonths() {
-            wrapper.innerHTML = ''; // Limpa o container
+            wrapper.innerHTML = ''; 
             for (let m = 4; m <= 8; m++) {
                 renderMonth(2026, m);
             }
@@ -239,13 +352,11 @@
             const calDiv = document.createElement('div');
             calDiv.className = 'calendar';
 
-            // Cabeçalho do Mês
             const headerDiv = document.createElement('div');
             headerDiv.className = 'header';
             headerDiv.textContent = `${months[month]} ${year}`;
             calDiv.appendChild(headerDiv);
 
-            // Dias da semana
             const weekdaysDiv = document.createElement('div');
             weekdaysDiv.className = 'weekdays';
             ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'].forEach(d => {
@@ -255,21 +366,18 @@
             });
             calDiv.appendChild(weekdaysDiv);
 
-            // Grid de dias
             const daysDiv = document.createElement('div');
             daysDiv.className = 'days';
 
             const firstDayOfMonth = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-            // Espaços vazios
             for (let i = 0; i < firstDayOfMonth; i++) {
                 const emptyDiv = document.createElement('div');
                 emptyDiv.classList.add('day', 'empty');
                 daysDiv.appendChild(emptyDiv);
             }
 
-            // Preenchendo os dias
             for (let i = 1; i <= daysInMonth; i++) {
                 const dayDiv = document.createElement('div');
                 dayDiv.classList.add('day');
@@ -277,16 +385,16 @@
 
                 const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
                 
-                const dayEvents = events.filter(e => e.date === dateString);
+                // Filtra os eventos baseados na aba atual (sempre mostra 'geral' + os eventos da view)
+                const dayEvents = allEvents.filter(e => e.date === dateString && (e.type === 'geral' || e.type === currentView));
                 
                 if (dayEvents.length > 0) {
-                    // Checa se o evento do dia inclui "REUNIÃO"
-                    const isMeeting = dayEvents.some(e => e.title.includes('REUNIÃO'));
+                    const hasTeamMeeting = dayEvents.some(e => e.type === currentView);
                     
-                    if (isMeeting) {
-                        dayDiv.classList.add('has-meeting'); // Azul para reuniões
+                    if (hasTeamMeeting) {
+                        dayDiv.classList.add(`has-${currentView}`);
                     } else {
-                        dayDiv.classList.add('has-event'); // Laranja para o resto
+                        dayDiv.classList.add('has-geral');
                     }
                 }
 
@@ -312,14 +420,22 @@
                     const eventItem = document.createElement('div');
                     eventItem.classList.add('event-item');
                     
-                    // Muda a cor da borda lateral se for reunião
-                    if(e.title.includes('REUNIÃO')) {
-                        eventItem.style.borderLeftColor = '#3498db';
-                        eventItem.querySelector('h3') ? eventItem.querySelector('h3').style.color = '#2980b9' : '';
+                    // Ajusta cores da borda da lista de detalhes baseado no tipo
+                    let borderColor = 'var(--geral-border)';
+                    let titleColor = 'var(--geral-text)';
+                    
+                    if(e.type === 'coord') {
+                        borderColor = 'var(--coord-border)';
+                        titleColor = 'var(--coord-text)';
+                    } else if (e.type === 'vigilia') {
+                        borderColor = 'var(--vigilia-border)';
+                        titleColor = 'var(--vigilia-text)';
                     }
 
+                    eventItem.style.borderLeftColor = borderColor;
+
                     eventItem.innerHTML = `
-                        <h3 style="margin: 0 0 5px 0; color: ${e.title.includes('REUNIÃO') ? '#2980b9' : 'var(--primary-color)'};">${e.title}</h3>
+                        <h3 style="margin: 0 0 5px 0; color: ${titleColor};">${e.title}</h3>
                         <p><strong>Hora:</strong> ${e.time}</p>
                         <p><strong>Local:</strong> ${e.location}</p>
                     `;
@@ -330,12 +446,10 @@
             }
 
             eventDetailsDiv.style.display = 'block';
-            
-            // Rola a página suavemente para ver os detalhes se estiver em tela menor
             eventDetailsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
-        // Inicializa renderizando todos os meses
+        // Inicia a aplicação
         renderAllMonths();
     </script>
 </body>
